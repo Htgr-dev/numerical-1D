@@ -1,0 +1,104 @@
+# ####### NUMERICAL SOLUTION OF 1D TRANSPORT EQUATION #######
+#############################################################
+#________________Define the Problem_________________________#
+# Solve the equation:  Ux + b*Ut = 0, XER, t>0, with        #
+# initial condition:   U(X, 0) = F(X)                       #
+# boundary condition:  U(0, t) = G(t)                       #  
+#############################################################
+#  For simplicity we will use F(X) = G(X) = cos(X-b*t)      #
+#############################################################
+#                                                           #
+#------------------Initial Conditions ----------------------#
+#           F(X, t=0)  = cos(X-b*t) = cos(X)                #
+#############################################################
+#                                                           #
+#------------------Boundary Conditions----------------------#
+#           F(X=0, t)  = cos(X-b*t) = cos(-b*t)             #
+#############################################################
+#               Import python libraries                     #
+#-----------------------------------------------------------#
+import numpy as np 
+from math import *
+import matplotlib.pyplot as plt
+
+#------------------Numerical Scheme ------------------------#
+# The following numerical scheme is used in the problem:    #
+#  U[n][k+1] = U[n][k] + a*( (U[n+1][k+1]+U[n][k+1])/2 -    #
+#              - (U[n+1][k] +U[n][k])/2)                    #
+#  where a = b*lam/2,  lam = dt/dx                          #
+#-----------------------------------------------------------#
+#                        SOLUTION                           #
+#-----------------------------------------------------------#
+#       1. Specifying time and space for computation:       #
+
+time = int(input("Please specify time(in sec)"))
+time_unit =float(input("Please specify time-step(in sec)"))
+space = int(input("Please specify space (in cm)"))
+space_unit =float(input("Please specify space-step(in cm)"))
+
+#   2. Defining time and space variables,and constants      #
+
+N = round(time/time_unit)     # time steps 
+K = round(space/space_unit)   # space nodes
+lam = time_unit/space_unit    # lambda is the value in scheme
+b = 1                         # velocity of the wave is 1   
+print(N, K)
+
+U = np.zeros((N, K))          #creating empty array N*K size
+
+#     3. Defining initial and boundary conditions          #
+def F_initial(x):
+    return cos(x)
+
+def F_boundary(y):
+    return cos(-b*y)
+
+def F_exact(x, t):
+    return cos(x-b*t)
+    
+#---------------------------------------------------------#
+#   4. Solving the equation for the given scheme          #
+#---------------------------------------------------------#
+for k in range(0, K):  
+    U[0][k] = round(F_initial(k),3)
+
+for n in range(N):
+    U[n][0]= round(F_boundary(n),3)
+
+# print(U)
+
+a = 4/(b*lam)
+print("a=", a)
+
+for n in range(1,N):
+    for k in range(1,K):
+        if k==1:
+            U[n][k] = round(a*(U[n][k-1] - U[n-1][k-1]) - U[n-1][k], 3)
+        else:
+            U[n][k] = round(a*(U[n][k-1] - U[n-1][k-1]) + (U[n-1][k-1] + U[n-1][k-2]), 3)
+        
+
+print("Numerical = ",U[-1])
+      
+#---------------------------------------------------------#
+#    5.  Defining the exact solution                      #
+#---------------------------------------------------------#
+U_ex = np.zeros(K)
+
+space = np.zeros(K)     # for space steps
+for k in range(K):
+    U_ex[k] = round(F_exact(time, k*space_unit),3) 
+    space[k]=(k*space_unit)
+
+print("Exact = ",U_ex)
+print(space)
+
+#---------------------------------------------------------#
+#    6. Plotting the numerical and  exact results         #
+#---------------------------------------------------------#
+plt.plot(space,U_ex, label="Exact")
+plt.plot(  space, U[-1],label="Numerical")
+plt.xlabel('Distance, cm')
+plt.ylabel('F(X)')
+plt.legend()
+plt.show()  
