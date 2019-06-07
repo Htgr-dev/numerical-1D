@@ -102,3 +102,62 @@ plt.xlabel('Distance, cm')
 plt.ylabel('F(X)')
 plt.legend()
 plt.show()  
+
+import numpy as np
+import scipy.sparse
+import scipy.sparse.linalg
+
+''' time = int(input("Please specify time(in sec)"))
+time_unit =float(input("Please specify time-step(in sec)"))
+space = int(input("Please specify space (in cm)"))
+space_unit =float(input("Please specify space-step(in cm)"))
+'''
+
+N = 10 #round(time/time_unit)     # time steps 
+K = 2 #round(space/space_unit)   # space nodes
+
+#---------------------------------------------------------------------#
+dt = 2
+dh  = 4
+
+#---------------------------------------------------------------------#
+lam = dt/dh    #time_unit/space_unit    # lambda is the value in scheme
+b = 1                         # velocity of the wave is 1   
+#---------------------------------------------------------------------#
+a= round(b*lam/4,2)
+print(a)
+c = 10
+
+#---------------------------------------------------------------------#
+# 3. Defining initial and boundary conditions                         #
+#---------------------------------------------------------------------#
+def F_initial(x):
+    return cos(x)
+
+def F_boundary(y):
+    return cos(-b*y)
+
+def F_exact(x, t):
+    return cos(x-b*t)
+
+#---------------------------------------------------------------------#
+
+for k in range(0, K):  
+    U[0][k] = round(F_initial(k),3)
+
+    
+# for n in range(N):
+#    U[n][0] = round(F_boundary(n),3)
+
+
+diags = np.zeros((3, K))   # 3 diagonals
+diags[0,:] = -a #np.linspace(-1, -K, K)
+diags[1,:] = 1
+diags[2,:] = a #np.linspace(1, K, K)
+A = scipy.sparse.spdiags(diags, [-1,0,1], K, K, format='csc')
+A.toarray() 
+# print(A)
+B = np.full(K, c)
+
+x = scipy.sparse.linalg.spsolve(A, B)
+print(x)
