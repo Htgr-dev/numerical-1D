@@ -24,8 +24,6 @@ import scipy.sparse
 import scipy.sparse.linalg
 %matplotlib inline
 
-
-
 #------------------Numerical Scheme ------------------------#
 # The following numerical scheme is used in the problem:    #
 #  U[n][k+1] = U[n][k] + a*( (U[n+1][k+1]+U[n][k+1]) -      #
@@ -59,9 +57,6 @@ def F_i(x):
 
 def F_b(n,k):
     return cos(k*dh-b*n*dt)       # when x= K, boundary
-
-def F_exact(h, t):
-    return cos(h-b*t)   # exact soultion
 
 #-----------------------------------------------------------#
 #      4. Solving the equation for the given scheme        #
@@ -100,25 +95,19 @@ Numerical = scipy.sparse.linalg.spsolve(A, B)
 #-----------------------------------------------------------#
 #     5.  Plotting the results( with exact solution)        #
 #-----------------------------------------------------------#
-dist = np.arange(0, h-dh-1, dh) 
-Exact = np.cos(dist - b*t)
-
-print(N)
-print(K)
-print(len(Exact))
-print(len(Numerical))
+n = np.arange(1,K,1) 
+Exact = np.cos(n*dh - b*t)
 
 plt.plot(Exact, dist, label="Exact")
 plt.plot(Numerical,dist, label="Numerical")
-plt.xlabel('Distance, cm')
-plt.ylabel('F(X)')
+plt.ylabel('Distance, cm')
+plt.xlabel('F(X)')
 plt.legend()
 plt.show()  
 #-----------------------------------------------------------#
 #     6.  Values to compare   ( with exact solution)        #
 #-----------------------------------------------------------#
-
-print('Numerical at T=',t, Numerical)
-print('Exact at T=',t, Exact)
-Diff_in_perc = 100*(Numerical - Exact)/Numerical
+Diff_in_perc = 100*(Exact-Numerical)/Exact
+#print('Numerical at T=',t, Numerical)
+#print('Exact at T=',t, Exact)
 print(Diff_in_perc)
