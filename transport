@@ -66,18 +66,14 @@ B = np.zeros((K-1))     #empty array for collecting Init values
 Exact = np.zeros((K-1)) #empty array for initial b
 
 for n in range(0,N):
-    BoundN_0 = round(a*F_b(n,0),3)
-    BoundN_t = round(a*F_b(n,K),3) 
-    
+    BoundN_0 = round(a*F_b(n,0),3)    
+    BoundN_t = round(a*F_b(n,K),3)     
     for k in range(1, K):
-        Init[k-1] = a*F_i(k-1) + F_i(k) - a*F_i(k+1)
-        
+        Init[k-1] = a*F_i(k-1) + F_i(k) - a*F_i(k+1)      
         if k==1:
-            B[k-1] = Init[k-1] + BoundN_0
-            
+            B[k-1] = Init[k-1] + BoundN_0         #first node
         elif k == K:
-            B[k-1] = Init[k-1] + BoundN_t
-            
+            B[k-1] = Init[k-1] + BoundN_t         #last node
         else:
             B[k-1] = Init[k-1]
                 
@@ -89,7 +85,8 @@ diags[1,:] = 1
 diags[2,:] = a #np.linspace(1, K, K)
 A = scipy.sparse.spdiags(diags, [-1,0,1], K-1, K-1, format='csc')
 A.toarray() 
-Numerical = scipy.sparse.linalg.spsolve(A, B)
+Num_sol = scipy.sparse.linalg.spsolve(A, B)
+
 #-----------------------------------------------------------#
 
 #-----------------------------------------------------------#
@@ -98,8 +95,8 @@ Numerical = scipy.sparse.linalg.spsolve(A, B)
 n = np.arange(1,K,1) 
 Exact = np.cos(n*dh - b*t)
 
-plt.plot(Exact, n*dh, label="Exact")
-plt.plot(Numerical,n*dh, label="Numerical")
+plt.plot(Exact, n*dh, label="Exact solution")
+plt.plot(Num_sol,n*dh, label="Numerical soulution")
 plt.ylabel('Distance, cm')
 plt.xlabel('F(X)')
 plt.legend()
@@ -107,7 +104,7 @@ plt.show()
 #-----------------------------------------------------------#
 #     6.  Values to compare   ( with exact solution)        #
 #-----------------------------------------------------------#
-Diff_in_perc = 100*(Exact-Numerical)/Exact
-#print('Numerical at T=',t, Numerical)
+Diff_in_perc = 100*(Exact-Num_sol)/Exact
+#print('Num_sol at T=',t, Numerical)
 #print('Exact at T=',t, Exact)
 print(Diff_in_perc)
