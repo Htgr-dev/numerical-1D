@@ -85,7 +85,7 @@ diags[1,:] = 1
 diags[2,:] = a #np.linspace(1, K, K)
 A = scipy.sparse.spdiags(diags, [-1,0,1], K-1, K-1, format='csc')
 A.toarray() 
-Num_sol = scipy.sparse.linalg.spsolve(A, B)
+Numeric_sol = scipy.sparse.linalg.spsolve(A, B)
 
 #-----------------------------------------------------------#
 
@@ -93,10 +93,10 @@ Num_sol = scipy.sparse.linalg.spsolve(A, B)
 #     5.  Plotting the results( with exact solution)        #
 #-----------------------------------------------------------#
 n = np.arange(1,K,1) 
-Exact = np.cos(n*dh - b*t)
+Exact_sol = np.cos(n*dh - b*t)
 
-plt.plot(Exact, n*dh, label="Exact solution")
-plt.plot(Num_sol,n*dh, label="Numerical soulution")
+plt.plot(Exact_sol, n*dh, label="Exact solution")
+plt.plot(Numeric_sol,n*dh, label="Numerical soulution")
 plt.ylabel('Distance, cm')
 plt.xlabel('F(X)')
 plt.legend()
@@ -104,7 +104,7 @@ plt.show()
 #-----------------------------------------------------------#
 #     6.  Values to compare   ( with exact solution)        #
 #-----------------------------------------------------------#
-Diff_in_perc = 100*(Exact-Num_sol)/Exact
+Diff_in_perc = 100*(Exact_sol-Numeric_sol)/Exact_sol
 #print('Num_sol at T=',t, Numerical)
 #print('Exact at T=',t, Exact)
 print(Diff_in_perc)
